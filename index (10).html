@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amani na Chakula</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#007DBC; --blue-dark:#00537D; --blue-deep:#003852;
+    --accent:#E2843A; --accent-dark:#B8631F;
+    --bg:#F4F8FB; --surface:#FFFFFF;
+    --ink:#152430; --ink-soft:#5B6B78; --line:#DCE6EC;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:'Public Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5;}
+  h1,h2,h3,h4{font-family:'Archivo',sans-serif;font-weight:700;margin:0;color:var(--blue-deep);}
+  button{font-family:inherit;cursor:pointer;}
+  .app{display:block;min-height:100vh;}
+
+  .topbar{background:var(--surface);border-bottom:1px solid var(--line);}
+  .hero-banner{width:100%;display:block;}
+  .hero-banner img{width:100%;height:auto;max-height:280px;object-fit:cover;display:block;}
+  .topbar-meta{display:flex;align-items:center;justify-content:space-between;padding:10px 30px;background:var(--blue-deep);flex-wrap:wrap;gap:6px;}
+  .topbar-meta .tagline{font-size:12px;color:#CDE6F4;font-family:'Public Sans';max-width:640px;}
+  .topbar-meta .proto-note{font-size:11px;color:#8CBCD6;white-space:nowrap;}
+
+  .htabs{display:flex;padding:0 30px;background:var(--surface);border-top:1px solid var(--line);}
+  .htabs .nav-item{padding:13px 16px;font-size:13.5px;}
+
+  .app-body{display:flex;align-items:flex-start;}
+
+  .sidebar{
+    width:250px;flex-shrink:0;color:#DCEBF5;padding:26px 18px 20px;display:flex;flex-direction:column;min-height:70vh;
+    background:linear-gradient(180deg, var(--blue) 0%, var(--blue-deep) 100%);
+  }
+  .sidebar-label{font-family:'Archivo',sans-serif;font-weight:700;font-size:10.5px;color:#B9DAEC;letter-spacing:.08em;text-transform:uppercase;padding:0 8px 14px;border-bottom:1px solid rgba(255,255,255,.14);margin-bottom:10px;}
+  .sidebar .nav{display:flex;flex-direction:column;gap:2px;}
+  .sidebar .nav-item{color:#BFE0F0;padding:11px 10px;border-left:3px solid transparent;border-bottom:none;font-size:13.2px;}
+  .sidebar .nav-item:hover{background:rgba(255,255,255,.08);color:#fff;}
+  .sidebar .nav-item.active{background:rgba(255,255,255,.11);color:#fff;border-left:3px solid var(--accent);border-bottom:none;}
+  .sidebar-foot{margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.14);font-size:10.5px;color:#8CBCD6;line-height:1.6;}
+
+  .ribbon{display:flex;flex-wrap:wrap;row-gap:0;padding:0 30px;background:var(--surface);}
+  .ribbon-group{display:flex;flex-wrap:wrap;padding-right:16px;margin-right:14px;border-right:1px solid var(--line);}
+  .ribbon-group:last-child{border-right:none;}
+  .nav-item{
+    display:flex;align-items:center;gap:7px;padding:12px 13px;color:var(--ink-soft);font-size:12.8px;
+    border-bottom:3px solid transparent;white-space:nowrap;
+  }
+  .nav-item svg{width:15px;height:15px;flex-shrink:0;opacity:.75;}
+  .nav-item:hover{background:#EEF6FB;cursor:pointer;color:var(--blue-deep);}
+  .nav-item.active{background:#EEF6FB;color:var(--blue-deep);border-bottom:3px solid var(--accent);font-weight:600;}
+  .nav-item.active svg{opacity:1;}
+
+  .main{flex:1;padding:0 0 70px;max-width:990px;margin:0;}
+  .view{display:none;}
+  .view.active{display:block;}
+  .topline{padding:30px 46px 0;font-size:12px;color:var(--ink-soft);font-weight:600;letter-spacing:.02em;}
+  .view-head{padding:6px 46px 22px;}
+  .view-head h1{font-size:28px;}
+  .view-head p{color:var(--ink-soft);margin-top:8px;max-width:600px;font-size:14.5px;font-family:'Public Sans';font-weight:400;}
+  .content{padding:0 46px;}
+
+  .territory-bar{display:flex;gap:0;margin:0 46px 22px;border-bottom:2px solid var(--blue-deep);}
+  .terr-tab{padding:10px 20px 12px;font-size:13.5px;color:var(--ink-soft);font-weight:600;border-bottom:3px solid transparent;margin-bottom:-2px;}
+  .terr-tab:hover{cursor:pointer;color:var(--ink);}
+  .terr-tab.active{color:var(--blue-deep);border-bottom-color:var(--accent);}
+
+  .hero-stat{margin:0 46px 30px;padding:34px 38px;background:var(--blue-deep);color:#EAF4FA;display:flex;align-items:flex-end;justify-content:space-between;gap:30px;position:relative;overflow:hidden;}
+  .hero-stat::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(100deg, rgba(255,255,255,.04) 0 3px, transparent 3px 34px);}
+  .hero-stat .big{position:relative;}
+  .hero-stat .big .num{font-family:'Archivo',sans-serif;font-weight:800;font-size:58px;line-height:1;color:#fff;}
+  .hero-stat .big .lbl{font-size:13.5px;color:#A9D2E6;margin-top:8px;max-width:280px;font-family:'Public Sans';}
+  .hero-mini-list{position:relative;display:flex;gap:32px;}
+  .hero-mini .n{font-family:'Archivo',sans-serif;font-size:25px;color:var(--accent);font-weight:800;}
+  .hero-mini .l{font-size:11.5px;color:#A9D2E6;margin-top:3px;max-width:110px;font-family:'Public Sans';}
+
+  .terr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:0 46px 34px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .terr-cell{padding:18px 22px;border-right:1px solid var(--line);background:var(--surface);}
+  .terr-cell:last-child{border-right:none;}
+  .terr-cell .name{font-family:'Archivo',sans-serif;font-size:16.5px;color:var(--blue-deep);display:flex;align-items:center;gap:8px;font-weight:700;}
+  .terr-cell .season{font-size:12px;color:var(--ink-soft);margin:4px 0 12px;}
+  .terr-cell .stat{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-top:1px solid var(--line);}
+  .terr-cell .stat b{color:var(--blue-deep);font-family:'Archivo',sans-serif;font-size:15px;}
+
+  .charts-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:0 46px 36px;}
+  .chart-card{background:var(--surface);border:1px solid var(--line);padding:20px 22px;}
+  .chart-card h4{font-size:13px;color:var(--blue-deep);margin-bottom:16px;text-transform:uppercase;letter-spacing:.02em;font-family:'Public Sans';font-weight:700;}
+  .chart-body{display:flex;align-items:center;gap:18px;}
+  .pie{width:96px;height:96px;border-radius:50%;flex-shrink:0;}
+  .pie-legend{flex:1;display:flex;flex-direction:column;gap:7px;}
+  .legend-item{display:flex;align-items:center;gap:8px;font-size:12.5px;}
+  .legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .legend-item b{margin-left:auto;font-family:'Archivo',sans-serif;color:var(--blue-deep);}
+
+  .roadmap-row{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin:0 46px 36px;}
+  .roadmap-card{background:var(--surface);border:1px dashed var(--line);padding:20px 22px;position:relative;}
+  .roadmap-card .phase-tag{position:absolute;top:18px;right:20px;font-size:10.5px;font-weight:700;background:#F0F4F7;color:var(--ink-soft);padding:3px 9px;text-transform:uppercase;letter-spacing:.03em;}
+  .roadmap-card h4{font-size:15px;color:var(--blue-deep);margin-bottom:8px;padding-right:80px;}
+  .roadmap-card p{font-size:13px;color:var(--ink-soft);margin:0;font-family:'Public Sans';}
+
+  .macro-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:0 46px 8px;}
+  .macro-card{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--accent);padding:18px 20px;}
+  .macro-card .macro-label{font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;font-weight:700;margin-bottom:8px;}
+  .macro-card .macro-num{font-family:'Archivo',sans-serif;font-size:30px;color:var(--blue-deep);font-weight:800;line-height:1;}
+  .macro-card .macro-sub{font-size:12.5px;color:var(--ink-soft);margin-top:6px;}
+  .macro-source{font-size:10.5px;color:var(--ink-soft);margin:6px 46px 30px;font-style:italic;}
+
+  .panel{margin-bottom:36px;}
+  .panel-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;}
+  .panel-head h3{font-size:18px;color:var(--blue-deep);}
+
+  .btn{background:var(--blue);color:#fff;border:none;padding:10px 18px;font-size:13.5px;font-weight:700;font-family:'Public Sans';}
+  .btn:hover{background:var(--blue-dark);}
+  .btn.clay{background:var(--accent);}
+  .btn.clay:hover{background:var(--accent-dark);}
+  .btn.secondary{background:transparent;color:var(--blue-deep);border:1px solid var(--line);font-weight:600;}
+  .btn.secondary:hover{border-color:var(--blue);}
+  .btn.small{padding:7px 13px;font-size:12.5px;}
+  .btn:disabled{background:#CBD8E0;color:#8494A0;cursor:not-allowed;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.6px;}
+  th{text-align:left;font-weight:700;font-size:11px;color:var(--ink-soft);padding:9px 4px;border-bottom:2px solid var(--blue-deep);text-transform:uppercase;letter-spacing:.03em;}
+  td{padding:12px 4px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  tr.clickable:hover{background:#EEF6FB;cursor:pointer;}
+
+  .badge{display:inline-block;font-size:11.2px;font-weight:700;padding:4px 9px;}
+  .badge.verifiee, .badge.actif, .badge.accord{background:var(--blue);color:#fff;}
+  .badge.en_attente, .badge.soumis, .badge.en_negociation{background:#E6ECF0;color:#5B6B78;}
+  .badge.verif_terrain{background:#DCEAF2;color:#00537D;}
+  .badge.verif_juridique{background:#FBE3CC;color:var(--accent-dark);}
+  .badge.protocole{background:#D4E9F5;color:var(--blue-dark);}
+  .badge.menage{background:#FDEBD8;color:var(--accent-dark);}
+  .badge.individuel{background:#E6ECF0;color:#5B6B78;}
+
+  .stepper{display:flex;align-items:center;margin:6px 0 26px;}
+  .step{flex:1;text-align:center;position:relative;}
+  .step .dot{width:26px;height:26px;border-radius:50%;background:#E6ECF0;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin:0 auto 8px;border:2px solid var(--line);}
+  .step.done .dot{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .step.current .dot{background:#fff;border-color:var(--accent);color:var(--accent-dark);}
+  .step .label{font-size:11px;color:var(--ink-soft);}
+  .step.done .label,.step.current .label{color:var(--ink);font-weight:700;}
+  .step:not(:last-child)::after{content:'';position:absolute;top:13px;left:calc(50% + 18px);right:calc(-50% + 18px);height:2px;background:var(--line);}
+  .step.done:not(:last-child)::after{background:var(--blue);}
+
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 30px;margin-bottom:20px;padding:20px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .detail-grid .k{color:var(--ink-soft);font-size:11.5px;margin-bottom:2px;}
+  .detail-grid .v{font-size:14px;}
+
+  .action-box{background:#EEF6FB;padding:20px 22px;margin-top:8px;border-left:4px solid var(--accent);}
+  .action-box h4{font-size:14.5px;margin-bottom:8px;color:var(--blue-deep);}
+  .field{margin-bottom:13px;}
+  .field label{display:block;font-size:12px;color:var(--ink-soft);margin-bottom:5px;font-weight:600;}
+  .field input,.field select{width:100%;padding:9px 11px;border:1px solid var(--line);font-size:13.8px;font-family:inherit;background:#fff;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+
+  .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,30,45,.45);align-items:center;justify-content:center;z-index:50;}
+  .modal-backdrop.open{display:flex;}
+  .modal{background:#fff;width:480px;max-width:92vw;max-height:86vh;overflow:auto;}
+  .modal-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
+  .modal-head h3{font-size:17px;}
+  .modal-body{padding:20px 22px;}
+  .modal-foot{padding:16px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;}
+  .x{background:none;border:none;font-size:20px;color:var(--ink-soft);}
+
+  .note{font-size:12.5px;color:var(--ink-soft);background:#EEF6FB;border-left:4px solid var(--accent);padding:11px 14px;margin:0 46px 28px;}
+  .tag{display:inline-block;font-size:11px;background:#EEF6FB;color:var(--blue-dark);padding:3px 8px;margin:2px 4px 2px 0;font-weight:600;}
+  .score-bar-track{background:#E6ECF0;height:6px;width:100%;}
+  .score-bar-fill{height:100%;background:var(--blue);}
+  .credit-amount{font-family:'Archivo',sans-serif;font-size:18px;color:var(--blue-deep);font-weight:800;}
+  .empty{color:var(--ink-soft);font-size:13.5px;padding:26px 4px;text-align:center;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="topbar">
+    <div class="hero-banner"><img src="assets/hero.png" alt="Amani na Chakula — CRAFST · EAC — Conflict Response and Agricultural Food System Transformation"></div>
+    <div class="topbar-meta">
+      <span class="tagline">An employment-land-credit coordination system for the economic reintegration of returnees through empowered agricultural cooperatives.</span>
+      <span class="proto-note">Demonstration prototype — Phase 1 · Simulated data</span>
+    </div>
+    <div class="htabs">
+      <div class="nav-item active" data-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12h4v8H3zM10 6h4v14h-4zM17 9h4v11h-4z"/></svg>Dashboard</div>
+      <div class="nav-item" data-view="menages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5M15.5 14.7c2.6.3 4.5 2.2 4.5 5.3"/></svg>Households &amp; Assignments</div>
+      <div class="nav-item" data-view="credit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1.4 1.3-2.2 3-2.2s3 .9 3 2c0 3-6 1.7-6 4.7 0 1.1 1.3 2 3 2s3-.8 3-2.2"/></svg>Agricultural Credit</div>
+    </div>
+  </div>
+
+  <div class="app-body">
+    <div class="sidebar">
+      <div class="sidebar-label">Organizations &amp; Data</div>
+      <div class="nav" id="side-nav">
+        <div class="nav-item" data-view="organisations"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 21V7l8-4 8 4v14"/><path d="M9 21v-6h6v6M9 11h.01M15 11h.01M9 15h.01M15 15h.01"/></svg>Organizations &amp; Negotiations</div>
+        <div class="nav-item" data-view="registre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 21V9"/></svg>Land Registry</div>
+        <div class="nav-item" data-view="soil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 20h18M5 20V10l4-3 4 3 4-6 4 6v10"/></svg>Soil &amp; Land Data</div>
+        <div class="nav-item" data-view="research"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Research in Progress</div>
+        <div class="nav-item" data-view="intrants"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 10l8-6 8 6v10H4z"/><path d="M9 20v-6h6v6"/></svg>Inputs</div>
+      </div>
+      <div class="sidebar-foot">Demonstration prototype — Phase 1<br>Simulated data for presentation purposes</div>
+    </div>
+
+  <div class="main">
+
+    <div class="view active" id="view-dashboard">
+      <div class="topline">COORDINATION COMMITTEE — UNHCR · CNR · PARTNER ORGANIZATIONS</div>
+      <div class="view-head"><h1>Dashboard</h1></div>
+
+      <div class="hero-stat">
+        <div class="big"><div class="num" id="hero-ha">—</div><div class="lbl">hectares under cultivation by returnee households, across all territories</div></div>
+        <div class="hero-mini-list">
+          <div class="hero-mini"><div class="n" id="hero-active">—</div><div class="l">active fields</div></div>
+          <div class="hero-mini"><div class="n" id="hero-menages">—</div><div class="l">households employed</div></div>
+          <div class="hero-mini"><div class="n" id="hero-kg">—</div><div class="l">kg of inputs delivered</div></div>
+        </div>
+      </div>
+
+      <div class="view-head" style="padding-top:0;padding-bottom:10px;">
+        <h3 style="font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;">Regional context — why this platform exists</h3>
+      </div>
+      <div class="macro-row">
+        <div class="macro-card">
+          <div class="macro-label">Food insecurity level</div>
+          <div class="macro-num">9.9M+</div>
+          <div class="macro-sub">people in IPC Phase 3+ across North Kivu, South Kivu, Ituri and Tanganyika (Jan–Jun 2026 projection). Fizi and Kalehe projected to reach Phase 4.</div>
+        </div>
+        <div class="macro-card">
+          <div class="macro-label">National agricultural potential</div>
+          <div class="macro-num">~80M ha</div>
+          <div class="macro-sub">arable land referenced for the DRC, with only around 10% currently cultivated (national figure, not territory-specific).</div>
+        </div>
+        <div class="macro-card">
+          <div class="macro-label">Land identified by CRAFST to date</div>
+          <div class="macro-num" id="macro-craft-ha">—</div>
+          <div class="macro-sub">identified so far (Uvira); Fizi and Kalehe assessments ongoing — the operational starting point this platform tracks field by field, from soil study to labor assignment.</div>
+        </div>
+      </div>
+      <div class="macro-source">Sources: IPC Acute Food Insecurity Projection Update, Jan–Jun 2026 · World Bank DRC agriculture reference documents.</div>
+
+      <div class="terr-grid" id="terr-grid"></div>
+
+      <div class="charts-row">
+        <div class="chart-card"><h4>Households by territory</h4><div class="chart-body" id="chart-territoire"></div></div>
+        <div class="chart-card"><h4>Household vs individual</h4><div class="chart-body" id="chart-unite"></div></div>
+        <div class="chart-card"><h4>Assignment status</h4><div class="chart-body" id="chart-statut"></div></div>
+      </div>
+
+      <div class="view-head" style="padding-top:0;padding-bottom:10px;">
+        <h3 style="font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;">Next steps — not active in this pilot</h3>
+      </div>
+      <div class="roadmap-row">
+        <div class="roadmap-card">
+          <span class="phase-tag">Phase 2</span>
+          <h4>Entrepreneurship &amp; digital literacy training</h4>
+          <p>Modules delivered by a specialized partner (e.g. NAMANA, WCP) once the pilot is validated — preparing households to manage their activity and use mobile phones for sales in Phase 3.</p>
+        </div>
+        <div class="roadmap-card">
+          <span class="phase-tag">Phase 2</span>
+          <h4>Enriched agro-climatic data</h4>
+          <p>Refining crop recommendations per territory using detailed rainfall calendars and finer soil analysis, building on the season data shown in Phase 1.</p>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="panel">
+          <div class="panel-head"><h3>Recent activity</h3></div>
+          <div id="activity-feed"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="view-organisations">
+      <div class="topline">PLATFORM MEMBERS</div>
+      <div class="view-head">
+        <h1>Organizations &amp; Land Negotiations</h1>
+        <p>Verified local organizations negotiate land access with landowners; a successful agreement gives rise to a cooperative.</p>
+      </div>
+      <div class="content">
+        <h3 style="font-size:12px;color:var(--ink-soft);margin-bottom:12px;text-transform:uppercase;letter-spacing:.03em;">Member organizations</h3>
+        <table style="margin-bottom:30px;">
+          <thead><tr><th>Organization</th><th>Territory of operation</th><th>Mandate</th><th>Status</th></tr></thead>
+          <tbody id="org-table"></tbody>
+        </table>
+
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;">
+          <h3 style="font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;">Ongoing land negotiations</h3>
+          <button class="btn clay small" id="btn-new-negotiation">+ Open a negotiation</button>
+        </div>
+        <table>
+          <thead><tr><th>Organization</th><th>Territory</th><th>Landowner</th><th>Status</th><th></th></tr></thead>
+          <tbody id="neg-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="view" id="view-registre">
+      <div class="topline">REGISTRY</div>
+      <div class="view-head">
+        <h1>Land Registry</h1>
+        <p>Fields linked to cooperatives formed from a land agreement, tracked through to activation and assignment.</p>
+      </div>
+      <div class="territory-bar" id="terr-bar-registre"></div>
+      <div class="content">
+        <table>
+          <thead><tr><th>Field</th><th>Cooperative</th><th>Territory</th><th>Area</th><th>Crop</th><th>Stage</th></tr></thead>
+          <tbody id="parcel-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="view" id="view-parcel-detail">
+      <div class="topline"><button class="btn secondary small" id="btn-back-registre">← Back to registry</button></div>
+      <div class="view-head"><h1 id="pd-name">Field</h1><p id="pd-sub"></p></div>
+      <div class="content">
+        <div class="stepper" id="pd-stepper"></div>
+        <div class="detail-grid" id="pd-details"></div>
+        <div id="pd-action-area"></div>
+        <div class="panel" style="margin-top:34px;">
+          <div class="panel-head"><h3>Assigned households</h3></div>
+          <div id="pd-menages-body"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="view-menages">
+      <div class="topline">BENEFICIARY DATABASE</div>
+      <div class="view-head">
+        <h1>Households &amp; Assignments</h1>
+        <p>Registered refugees — as households (with dependents) or individuals — pending or already assigned to an active field.</p>
+      </div>
+      <div class="territory-bar" id="terr-bar-menages"></div>
+      <div class="content">
+        <table>
+          <thead><tr><th>Name</th><th>Unit</th><th>Territory</th><th>Arrival</th><th>Status</th><th>Field</th><th>Cross-cutting programs</th></tr></thead>
+          <tbody id="menage-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="view" id="view-soil">
+      <div class="topline">PEDOLOGICAL DATA</div>
+      <div class="view-head">
+        <h1>Soil &amp; Land Data</h1>
+        <p>Soil composition and suitability findings for each registered field, as submitted by member organizations after field sampling.</p>
+      </div>
+      <div class="territory-bar" id="terr-bar-soil"></div>
+      <div class="content">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:16px;"><button class="btn clay small" id="btn-new-soil">+ Submit a soil report</button></div>
+        <table>
+          <thead><tr><th>Field</th><th>Territory</th><th>Crop</th><th>Soil finding</th></tr></thead>
+          <tbody id="soil-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="view" id="view-research">
+      <div class="topline">ONGOING VERIFICATION</div>
+      <div class="view-head">
+        <h1>Research in Progress</h1>
+        <p>Fields currently undergoing field verification, soil study or legal review — not yet available for household assignment.</p>
+      </div>
+      <div class="territory-bar" id="terr-bar-research"></div>
+      <div class="content">
+        <table>
+          <thead><tr><th>Field</th><th>Territory</th><th>Cooperative</th><th>Stage</th><th>Status note</th></tr></thead>
+          <tbody id="research-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="view" id="view-intrants">
+      <div class="topline">TRACEABILITY</div>
+      <div class="view-head"><h1>Input Distribution</h1><p>Tracking of seeds, fertilizer and tools by registered field.</p></div>
+      <div class="content">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:16px;"><button class="btn clay" id="btn-new-input">+ Record a distribution</button></div>
+        <table>
+          <thead><tr><th>Date</th><th>Field</th><th>Input</th><th>Quantity</th><th>Organization</th></tr></thead>
+          <tbody id="input-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="view" id="view-credit">
+      <div class="topline">VSLA FUND</div>
+      <div class="view-head"><h1>Agricultural Credit</h1><p>Eligibility calculated using objective, verifiable criteria: savings history, training attendance, and group solidarity guarantee.</p></div>
+      <div class="note">Households with less than one season of tenure receive a <strong>starter grant</strong> (non-repayable) rather than a loan — credit becomes available from the 2nd season onward.</div>
+      <div class="content">
+        <table>
+          <thead><tr><th>Household</th><th>Tenure</th><th>VSLA savings</th><th>Training attendance</th><th>Group guarantee</th><th>Eligibility</th></tr></thead>
+          <tbody id="credit-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-negotiation">
+  <div class="modal">
+    <div class="modal-head"><h3>Open a land negotiation</h3><button class="x" data-close>&times;</button></div>
+    <div class="modal-body">
+      <div class="field"><label>Lead organization</label><select id="ng-org"></select></div>
+      <div class="row2">
+        <div class="field"><label>Territory</label><select id="ng-terr"><option>Fizi</option><option>Uvira</option><option>Kalehe</option></select></div>
+        <div class="field"><label>Landowner</label><input id="ng-owner" placeholder="Owner's name"></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn secondary" data-close>Cancel</button><button class="btn clay" id="ng-submit">Open negotiation</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-input">
+  <div class="modal">
+    <div class="modal-head"><h3>Record a distribution</h3><button class="x" data-close>&times;</button></div>
+    <div class="modal-body">
+      <div class="field"><label>Field (active only)</label><select id="ni-parcel"></select></div>
+      <div class="row2">
+        <div class="field"><label>Input</label><select id="ni-type"><option>Seeds (maize)</option><option>NPK fertilizer</option><option>Farming tools</option><option>Seeds (beans)</option></select></div>
+        <div class="field"><label>Quantity</label><input id="ni-qty" placeholder="e.g. 50 kg"></div>
+      </div>
+      <div class="field"><label>Distributing organization</label><input id="ni-org" placeholder="e.g. AIRD, CEDIER..."></div>
+    </div>
+    <div class="modal-foot"><button class="btn secondary" data-close>Cancel</button><button class="btn clay" id="ni-submit">Save</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-soil">
+  <div class="modal">
+    <div class="modal-head"><h3>Submit a soil report</h3><button class="x" data-close>&times;</button></div>
+    <div class="modal-body">
+      <div class="field"><label>Field</label><select id="sr-parcel"></select></div>
+      <div class="field"><label>Submitting organization</label><input id="sr-org" placeholder="e.g. Open Land Network"></div>
+      <div class="field"><label>Soil finding</label><input id="sr-finding" placeholder="e.g. Clay loam, pH 6.1 — favorable for maize"></div>
+    </div>
+    <div class="modal-foot"><button class="btn secondary" data-close>Cancel</button><button class="btn clay" id="sr-submit">Save report</button></div>
+  </div>
+</div>
+
+<script>
+const STAGES = ['soumis','verif_terrain','verif_juridique','protocole','actif'];
+const STAGE_LABELS = {soumis:'Submitted', verif_terrain:'Field verification', verif_juridique:'Legal verification', protocole:'Agreement signed', actif:'Active'};
+
+const TERRITORIES = {
+  'Fizi':   {season:'Dry season (June–Sept.)', icon:'☀️', available:null},
+  'Uvira':  {season:'Rainy season (Sept.–Dec.)', icon:'🌧️', available:700},
+  'Kalehe': {season:'Rainy season (Sept.–Dec.)', icon:'🌦️', available:null},
+};
+
+let organizations = [
+  {id:'O-1', name:'CIAUD', territory:'Uvira, Fizi, Bukavu', mandate:'Protection & community rehabilitation', status:'verifiee'},
+  {id:'O-2', name:'Open Land Network', territory:'Uvira, Kalehe', mandate:'Land mediation & agriculture', status:'verifiee'},
+  {id:'O-3', name:'Baraka Rural Collective', territory:'Fizi', mandate:'Support to agricultural cooperatives', status:'en_attente'},
+];
+
+let negotiations = [
+  {id:'N-1', orgId:'O-2', territory:'Uvira', owner:'Mr. Bahati Chirimwami', status:'accord', coopId:'C-1'},
+  {id:'N-2', orgId:'O-1', territory:'Fizi', owner:'Ms. Furaha Nzigire', status:'accord', coopId:'C-2'},
+  {id:'N-3', orgId:'O-2', territory:'Kalehe', owner:'Mr. Kasereka Mwenge', status:'accord', coopId:'C-3'},
+  {id:'N-4', orgId:'O-2', territory:'Uvira', owner:'Ms. Zawadi Mapendo', status:'accord', coopId:'C-4'},
+];
+
+let cooperatives = [
+  {id:'C-1', name:'Ruzizi Solidarity Cooperative', territory:'Uvira', owner:'Mr. Bahati Chirimwami', orgId:'O-2'},
+  {id:'C-2', name:'Baraka Land & Peace Cooperative', territory:'Fizi', owner:'Ms. Furaha Nzigire', orgId:'O-1'},
+  {id:'C-3', name:'Kalehe Future Cooperative', territory:'Kalehe', owner:'Mr. Kasereka Mwenge', orgId:'O-2'},
+  {id:'C-4', name:'Luvungi Future Cooperative', territory:'Uvira', owner:'Ms. Zawadi Mapendo', orgId:'O-2'},
+];
+
+let parcels = [
+  {id:'P-001', name:'Runingu Field 1', coopId:'C-1', territory:'Uvira', loc:'Runingu, Ruzizi Plain', surface:3.2, culture:'Maize', stage:'actif', soil:'Loamy clay, pH 6.2 — favorable', legal:'Customary lease validated (24 months)', signedAt:'02/07/2026', labor:{count:4, unit:'households', duration:'4 months'}},
+  {id:'P-002', name:'Baraka North Field', coopId:'C-2', territory:'Fizi', loc:'Baraka', surface:1.8, culture:'Beans', stage:'protocole', soil:'Sandy loam, pH 5.9 — adequate', legal:'Written owner/cooperative agreement verified', signedAt:null, labor:{count:3, unit:'households', duration:'3 months'}},
+  {id:'P-003', name:'Kalehe Center Field', coopId:'C-3', territory:'Kalehe', loc:'Kalehe center', surface:2.5, culture:'Cassava', stage:'verif_juridique', soil:'Analysis in progress', legal:'Under verification', signedAt:null, labor:{count:0, unit:'households', duration:''}},
+  {id:'P-004', name:'Sange Field 2', coopId:'C-1', territory:'Uvira', loc:'Sange', surface:1.2, culture:'Rice', stage:'verif_terrain', soil:'Sample collected, awaiting results', legal:'Not yet started', signedAt:null, labor:{count:0, unit:'households', duration:''}},
+  {id:'P-005', name:'Luvungi Field 1', coopId:'C-4', territory:'Uvira', loc:'Luvungi, Ruzizi Plain', surface:300, culture:'To be determined', stage:'soumis', soil:'Not yet started', legal:'Not yet started', signedAt:null, labor:{count:0, unit:'households', duration:''}},
+];
+
+let menages = [
+  {id:'M-01', name:'Amani K. Household', type:'menage', dependents:3, territory:'Uvira', arrival:'14/08/2026', status:'affecte', parcel:'P-001', programs:['Digital literacy — NAMANA']},
+  {id:'M-02', name:'Neema B. Household', type:'menage', dependents:2, territory:'Uvira', arrival:'14/08/2026', status:'affecte', parcel:'P-001', programs:[]},
+  {id:'M-03', name:'Espoir M. (individual)', type:'individuel', dependents:0, territory:'Fizi', arrival:'16/08/2026', status:'en_attente', parcel:null, programs:['Psychosocial support — S.A.D']},
+  {id:'M-04', name:'Furaha L. Household', type:'menage', dependents:4, territory:'Fizi', arrival:'18/08/2026', status:'en_attente', parcel:null, programs:[]},
+  {id:'M-05', name:'Bienfait T. (individual)', type:'individuel', dependents:0, territory:'Kalehe', arrival:'19/08/2026', status:'en_attente', parcel:null, programs:[]},
+];
+
+let inputsLog = [
+  {date:'05/07/2026', parcel:'P-001', type:'Seeds (maize)', qty:'40 kg', org:'AIRD'},
+  {date:'08/07/2026', parcel:'P-001', type:'NPK fertilizer', qty:'60 kg', org:'CEDIER'},
+];
+
+let creditMembers = [
+  {name:'Amani K. Household', tenure:2, savings:0.8, training:0.9, guarantors:3},
+  {name:'Neema B. Household', tenure:2, savings:0.55, training:0.75, guarantors:2},
+  {name:'Espoir M.', tenure:0, savings:0, training:0.3, guarantors:0},
+];
+
+let activity = [
+  {t:'2 days ago', txt:"Baraka North Field: agreement protocol signed."},
+  {t:'4 days ago', txt:'2 households assigned to Runingu Field 1.'},
+  {t:'6 days ago', txt:"NPK fertilizer distribution recorded on Runingu Field 1 (CEDIER)."},
+];
+
+let selectedTerritory = 'All';
+
+document.querySelectorAll('.nav-item').forEach(item=>item.addEventListener('click',()=>showView(item.dataset.view, item)));
+function showView(viewId, navEl){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+viewId).classList.add('active');
+  if(navEl){document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));navEl.classList.add('active');}
+  render();
+}
+
+function territoryBar(containerId){
+  const names = ['All','Fizi','Uvira','Kalehe'];
+  document.getElementById(containerId).innerHTML = names.map(n=>
+    `<div class="terr-tab ${selectedTerritory===n?'active':''}" onclick="setTerritory('${n}')">${n}</div>`).join('');
+}
+function setTerritory(n){ selectedTerritory = n; render(); }
+
+function render(){
+  territoryBar('terr-bar-registre');
+  territoryBar('terr-bar-menages');
+  territoryBar('terr-bar-soil');
+  territoryBar('terr-bar-research');
+  renderDashboard(); renderOrganisations(); renderRegistre(); renderMenages(); renderIntrants(); renderCredit(); renderSoil(); renderResearch();
+}
+
+function renderDashboard(){
+  const totalHa = parcels.reduce((s,p)=>s+p.surface,0).toFixed(1);
+  const active = parcels.filter(p=>p.stage==='actif').length;
+  const assignedMenages = menages.filter(m=>m.status==='affecte').length;
+  const kg = inputsLog.reduce((s,i)=>s+(parseFloat(i.qty)||0),0);
+  document.getElementById('hero-ha').textContent = totalHa;
+  document.getElementById('hero-active').textContent = active;
+  document.getElementById('hero-menages').textContent = assignedMenages;
+  document.getElementById('hero-kg').textContent = kg;
+
+  const knownAvailable = Object.values(TERRITORIES).filter(t=>t.available).reduce((s,t)=>s+t.available,0);
+  document.getElementById('macro-craft-ha').textContent = knownAvailable + ' ha';
+
+  document.getElementById('terr-grid').innerHTML = Object.keys(TERRITORIES).map(t=>{
+    const info = TERRITORIES[t];
+    const tp = parcels.filter(p=>p.territory===t);
+    const ha = tp.reduce((s,p)=>s+p.surface,0).toFixed(1);
+    const activeP = tp.filter(p=>p.stage==='actif').length;
+    const tm = menages.filter(m=>m.territory===t && m.status==='affecte').length;
+    return `<div class="terr-cell">
+      <div class="name">${info.icon} ${t}</div>
+      <div class="season">${info.season}</div>
+      <div class="stat"><span>Identified available land</span><b>${info.available ? info.available+' ha' : 'To be assessed'}</b></div>
+      <div class="stat"><span>Area registered on the platform</span><b>${ha} ha</b></div>
+      <div class="stat"><span>Active fields</span><b>${activeP}</b></div>
+      <div class="stat"><span>Households employed</span><b>${tm}</b></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('activity-feed').innerHTML = activity.map(a=>
+    `<div style="padding:12px 0;border-bottom:1px solid var(--line);font-size:13.8px;">
+      <span style="color:var(--ink-soft);font-size:11.5px;">${a.t}</span><br>${a.txt}
+    </div>`).join('');
+
+  renderCharts();
+}
+
+const CHART_COLORS = ['#007DBC','#E2843A','#5B6B78','#8FC1DD'];
+
+function drawPie(containerId, data){
+  const total = data.reduce((s,d)=>s+d.value,0) || 1;
+  let acc = 0;
+  const stops = data.map((d,i)=>{
+    const start = acc/total*360;
+    acc += d.value;
+    const end = acc/total*360;
+    return `${CHART_COLORS[i%CHART_COLORS.length]} ${start}deg ${end}deg`;
+  }).join(', ');
+  const pieHtml = total>0
+    ? `<div class="pie" style="background:conic-gradient(${stops});"></div>`
+    : `<div class="pie" style="background:#E6ECF0;"></div>`;
+  const legendHtml = `<div class="pie-legend">` + data.map((d,i)=>{
+    const pct = total>0 ? Math.round(d.value/total*100) : 0;
+    return `<div class="legend-item"><span class="legend-dot" style="background:${CHART_COLORS[i%CHART_COLORS.length]}"></span>${d.label}<b>${pct}%</b></div>`;
+  }).join('') + `</div>`;
+  document.getElementById(containerId).innerHTML = pieHtml + legendHtml;
+}
+
+function renderCharts(){
+  drawPie('chart-territoire', Object.keys(TERRITORIES).map(t=>({label:t, value:menages.filter(m=>m.territory===t).length})));
+  drawPie('chart-unite', [
+    {label:'Households', value:menages.filter(m=>m.type==='menage').length},
+    {label:'Individuals', value:menages.filter(m=>m.type==='individuel').length},
+  ]);
+  drawPie('chart-statut', [
+    {label:'Assigned', value:menages.filter(m=>m.status==='affecte').length},
+    {label:'Pending', value:menages.filter(m=>m.status==='en_attente').length},
+  ]);
+}
+
+function orgName(id){return organizations.find(o=>o.id===id)?.name || id;}
+function coopInfo(id){return cooperatives.find(c=>c.id===id);}
+
+function renderOrganisations(){
+  document.getElementById('org-table').innerHTML = organizations.map(o=>`
+    <tr><td><strong>${o.name}</strong></td><td>${o.territory}</td><td>${o.mandate}</td>
+    <td><span class="badge ${o.status}">${o.status==='verifiee'?'Verified':'Pending'}</span></td></tr>`).join('');
+
+  document.getElementById('neg-table').innerHTML = negotiations.map(n=>`
+    <tr><td>${orgName(n.orgId)}</td><td>${n.territory}</td><td>${n.owner}</td>
+    <td><span class="badge ${n.status==='accord'?'accord':'en_negociation'}">${n.status==='accord'?'Agreement reached':'Negotiating'}</span></td>
+    <td>${n.status==='accord'
+        ? `<span style="font-size:12px;color:var(--ink-soft);">Cooperative: ${coopInfo(n.coopId)?.name || '—'}</span>`
+        : `<button class="btn small" onclick="convertNegotiation('${n.id}')">Form the cooperative</button>`}</td></tr>`).join('');
+
+  const orgSel = document.getElementById('ng-org');
+  if(orgSel) orgSel.innerHTML = organizations.filter(o=>o.status==='verifiee').map(o=>`<option value="${o.id}">${o.name}</option>`).join('');
+}
+
+function convertNegotiation(id){
+  const n = negotiations.find(x=>x.id===id);
+  n.status='accord';
+  const coopId = 'C-'+(cooperatives.length+1);
+  const coop = {id:coopId, name:`${n.territory} ${n.owner.split(' ').pop()} Cooperative`, territory:n.territory, owner:n.owner, orgId:n.orgId};
+  cooperatives.push(coop);
+  n.coopId = coopId;
+  const parcelId = 'P-'+String(parcels.length+1).padStart(3,'0');
+  parcels.push({id:parcelId, name:`${n.territory} Field — to be qualified`, coopId, territory:n.territory, loc:n.territory, surface:1.0, culture:'To be determined', stage:'soumis', soil:'Not yet started', legal:'Not yet started', signedAt:null, labor:{count:0,unit:'households',duration:''}});
+  activity.unshift({t:"just now", txt:`Agreement reached with ${n.owner} (${n.territory}) — ${coop.name} created, field registered for qualification.`});
+  render();
+}
+
+function renderRegistre(){
+  const list = parcels.filter(p=>selectedTerritory==='All' || p.territory===selectedTerritory);
+  document.getElementById('parcel-table').innerHTML = list.map(p=>`
+    <tr class="clickable" onclick="openParcel('${p.id}')">
+      <td><strong>${p.name}</strong></td><td>${coopInfo(p.coopId)?.name||'—'}</td><td>${p.territory}</td><td>${p.surface} ha</td><td>${p.culture}</td>
+      <td><span class="badge ${p.stage}">${p.stage==='verif_juridique'?'Legal verification':STAGE_LABELS[p.stage]}</span></td></tr>`).join('');
+}
+
+let currentParcelId = null;
+function openParcel(id){currentParcelId=id;showView('parcel-detail',null);renderParcelDetail();}
+document.getElementById('btn-back-registre').addEventListener('click',()=>showView('registre', document.querySelector('.nav-item[data-view="registre"]')));
+
+function renderParcelDetail(){
+  const p = parcels.find(x=>x.id===currentParcelId);
+  if(!p) return;
+  const coop = coopInfo(p.coopId);
+  document.getElementById('pd-name').textContent = p.name;
+  document.getElementById('pd-sub').textContent = `${p.territory} · ${coop?.name} · Landowner: ${coop?.owner}`;
+  const stageIdx = STAGES.indexOf(p.stage);
+  document.getElementById('pd-stepper').innerHTML = STAGES.map((s,i)=>{
+    const cls = i<stageIdx?'done':(i===stageIdx?'current':'');
+    return `<div class="step ${cls}"><div class="dot">${i<stageIdx?'✓':i+1}</div><div class="label">${s==='verif_juridique'?'Legal verification':STAGE_LABELS[s]}</div></div>`;
+  }).join('');
+  document.getElementById('pd-details').innerHTML = `
+    <div><div class="k">Area</div><div class="v">${p.surface} ha</div></div>
+    <div><div class="k">Crop</div><div class="v">${p.culture}</div></div>
+    <div><div class="k">Soil analysis</div><div class="v">${p.soil}</div></div>
+    <div><div class="k">Legal status</div><div class="v">${p.legal}</div></div>
+    <div><div class="k">Refugee labor assignment need</div><div class="v">${p.labor.count ? `${p.labor.count} ${p.labor.unit} for the ${p.culture} crop, over ${p.labor.duration}` : 'Not yet determined'}</div></div>`;
+
+  const area = document.getElementById('pd-action-area');
+  if(p.stage==='soumis'){
+    area.innerHTML = `<div class="action-box"><h4>Next step — field verification</h4>
+      <p style="font-size:13px;color:var(--ink-soft);margin-bottom:12px;">A monitoring &amp; evaluation officer visits the site to confirm the area and prepare soil sampling.</p>
+      <button class="btn small" onclick="advanceParcel('${p.id}','Area confirmed on site, soil sample collected.')">Record field verification</button></div>`;
+  } else if(p.stage==='verif_terrain'){
+    area.innerHTML = `<div class="action-box"><h4>Next step — soil analysis and labor need</h4>
+      <p style="font-size:13px;color:var(--ink-soft);margin-bottom:12px;">Soil analysis determines the suitable crop; from this the number of households needed and the cultivation period are derived.</p>
+      <div class="row3">
+        <div class="field"><label>Selected crop</label><select id="pd-culture"><option>Maize</option><option>Cassava</option><option>Beans</option><option>Rice</option></select></div>
+        <div class="field"><label>Households needed</label><input id="pd-labor-count" type="number" placeholder="e.g. 4"></div>
+        <div class="field"><label>Duration</label><input id="pd-labor-duration" placeholder="e.g. 4 months"></div>
+      </div>
+      <button class="btn small" onclick="setSoilAndLabor('${p.id}')">Validate legal agreement and labor need</button></div>`;
+  } else if(p.stage==='verif_juridique'){
+    area.innerHTML = `<div class="action-box"><h4>Next step — agreement protocol</h4>
+      <p style="font-size:13px;color:var(--ink-soft);margin-bottom:12px;">Have the agreement protocol signed, defining activities and the payment model (start-up cash + harvest sharing).</p>
+      <button class="btn small" onclick="advanceParcel('${p.id}','Agreement protocol signed.')">Confirm signature</button></div>`;
+  } else if(p.stage==='protocole'){
+    area.innerHTML = `<div class="action-box"><h4>Next step — activation</h4>
+      <p style="font-size:13px;color:var(--ink-soft);margin-bottom:12px;">The field becomes eligible for household assignment and input distribution.</p>
+      <button class="btn small" onclick="advanceParcel('${p.id}','Field activated.')">Activate the field</button></div>`;
+  } else {
+    area.innerHTML = `<div class="note" style="margin:0;">Field active since ${p.signedAt||'agreement signed'}.</div>`;
+  }
+
+  const assigned = menages.filter(m=>m.parcel===p.id);
+  const compatible = menages.filter(m=>m.status==='en_attente' && m.territory===p.territory);
+  const rp = document.getElementById('pd-menages-body');
+  if(p.stage!=='actif'){
+    rp.innerHTML = `<div class="empty">Assignment becomes possible once the field is activated and the labor need is determined.</div>`;
+  } else {
+    let html='';
+    html += `<div style="font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;">Need: ${p.labor.count} ${p.labor.unit} for ${p.labor.duration} — currently assigned: ${assigned.length}</div>`;
+    if(assigned.length){
+      html += `<table><thead><tr><th>Household</th><th>Unit</th><th>Arrival</th></tr></thead><tbody>` +
+        assigned.map(m=>`<tr><td>${m.name}</td><td><span class="badge ${m.type}">${m.type==='menage'?m.dependents+' dependents':'Individual'}</span></td><td>${m.arrival}</td></tr>`).join('') +
+        `</tbody></table>`;
+    } else { html += `<div class="empty" style="padding:14px 0;">No household assigned yet.</div>`; }
+    if(compatible.length && assigned.length < p.labor.count){
+      html += `<div class="action-box" style="margin-top:16px;"><h4>Assign a compatible household (same territory)</h4>
+        <div class="field"><select id="assign-select">${compatible.map(m=>`<option value="${m.id}">${m.name} — ${m.type==='menage'?m.dependents+' dependents':'individual'}</option>`).join('')}</select></div>
+        <button class="btn small" onclick="assignMenage('${p.id}')">Assign to this field</button></div>`;
+    } else if(assigned.length >= p.labor.count && p.labor.count>0){
+      html += `<div class="note" style="margin:16px 0 0;">Labor need fully covered for this field.</div>`;
+    }
+    rp.innerHTML = html;
+  }
+}
+
+function setSoilAndLabor(id){
+  const p = parcels.find(x=>x.id===id);
+  p.culture = document.getElementById('pd-culture').value;
+  const count = parseInt(document.getElementById('pd-labor-count').value)||1;
+  const duration = document.getElementById('pd-labor-duration').value || 'To be specified';
+  p.labor = {count, unit:'households', duration};
+  p.soil = `Analysis completed — selected crop: ${p.culture}`;
+  p.legal = 'Owner/cooperative agreement verified — viable for the duration of the pilot';
+  advanceParcel(id, `Soil analysis validated (${p.culture}) — need determined: ${count} households over ${duration}.`);
+}
+
+function advanceParcel(id, txt){
+  const p = parcels.find(x=>x.id===id);
+  const idx = STAGES.indexOf(p.stage);
+  p.stage = STAGES[idx+1];
+  if(p.stage==='actif') p.signedAt = new Date().toLocaleDateString('en-GB');
+  activity.unshift({t:"just now", txt:`${p.name} — ${txt}`});
+  renderParcelDetail(); render();
+}
+function assignMenage(parcelId){
+  const rid = document.getElementById('assign-select').value;
+  const m = menages.find(x=>x.id===rid);
+  m.status='affecte'; m.parcel=parcelId;
+  activity.unshift({t:"just now", txt:`${m.name} assigned to ${parcels.find(p=>p.id===parcelId).name}.`});
+  renderParcelDetail(); render();
+}
+
+function renderMenages(){
+  const list = menages.filter(m=>selectedTerritory==='All' || m.territory===selectedTerritory);
+  document.getElementById('menage-table').innerHTML = list.map(m=>`
+    <tr><td>${m.name}</td>
+    <td><span class="badge ${m.type}">${m.type==='menage'?m.dependents+' dependents':'Individual'}</span></td>
+    <td>${m.territory}</td><td>${m.arrival}</td>
+    <td>${m.status==='affecte'?`<span class="badge actif">Assigned</span>`:`<span class="badge soumis">Pending</span>`}</td>
+    <td style="font-size:12.5px;color:var(--ink-soft);">${m.parcel?parcels.find(p=>p.id===m.parcel)?.name:'—'}</td>
+    <td>${m.programs.length ? m.programs.map(pr=>`<span class="tag">${pr}</span>`).join('') : '<span style="color:var(--ink-soft);font-size:12px;">—</span>'}</td>
+    </tr>`).join('');
+}
+
+function renderSoil(){
+  const list = parcels.filter(p=>selectedTerritory==='All' || p.territory===selectedTerritory);
+  document.getElementById('soil-table').innerHTML = list.map(p=>`
+    <tr><td><strong>${p.name}</strong></td><td>${p.territory}</td><td>${p.culture}</td><td>${p.soil}</td></tr>`).join('');
+  const sel = document.getElementById('sr-parcel');
+  if(sel) sel.innerHTML = parcels.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+}
+
+function renderResearch(){
+  const ongoingStages = ['soumis','verif_terrain','verif_juridique'];
+  const list = parcels.filter(p=>ongoingStages.includes(p.stage) && (selectedTerritory==='All' || p.territory===selectedTerritory));
+  document.getElementById('research-table').innerHTML = list.length ? list.map(p=>`
+    <tr><td><strong>${p.name}</strong></td><td>${p.territory}</td><td>${coopInfo(p.coopId)?.name||'—'}</td>
+    <td><span class="badge ${p.stage}">${STAGE_LABELS[p.stage]}</span></td>
+    <td style="font-size:12.5px;color:var(--ink-soft);">${p.soil}</td></tr>`).join('')
+    : `<tr><td colspan="5" class="empty">No field currently under verification for this territory.</td></tr>`;
+}
+
+function renderIntrants(){
+  document.getElementById('input-table').innerHTML = inputsLog.map(i=>`
+    <tr><td>${i.date}</td><td>${parcels.find(p=>p.id===i.parcel)?.name||i.parcel}</td><td>${i.type}</td><td>${i.qty}</td><td>${i.org}</td></tr>`).join('');
+  const sel = document.getElementById('ni-parcel');
+  const act = parcels.filter(p=>p.stage==='actif');
+  sel.innerHTML = act.length ? act.map(p=>`<option value="${p.id}">${p.name}</option>`).join('') : `<option value="">No active field</option>`;
+}
+
+function renderCredit(){
+  document.getElementById('credit-table').innerHTML = creditMembers.map(m=>{
+    const eligible = m.tenure>=1;
+    let amount;
+    if(!eligible){amount = `<span style="color:var(--ink-soft);">Starter grant</span>`;}
+    else{const score=(m.savings*0.4+m.training*0.3+Math.min(m.guarantors/3,1)*0.3); amount=`<span class="credit-amount">$${Math.round(score*300)}</span>`;}
+    return `<tr><td>${m.name}</td><td>${m.tenure} season${m.tenure!==1?'s':''}</td>
+      <td><div class="score-bar-track"><div class="score-bar-fill" style="width:${m.savings*100}%"></div></div></td>
+      <td><div class="score-bar-track"><div class="score-bar-fill" style="width:${m.training*100}%"></div></div></td>
+      <td>${m.guarantors} guarantor${m.guarantors!==1?'s':''}</td><td>${amount}</td></tr>`;
+  }).join('');
+}
+
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(el){el.closest('.modal-backdrop').classList.remove('open');}
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>closeModal(b)));
+
+document.getElementById('btn-new-negotiation').addEventListener('click',()=>{renderOrganisations();openModal('modal-negotiation');});
+document.getElementById('ng-submit').addEventListener('click',()=>{
+  const orgId = document.getElementById('ng-org').value;
+  const territory = document.getElementById('ng-terr').value;
+  const owner = document.getElementById('ng-owner').value || 'Owner not specified';
+  const id = 'N-'+(negotiations.length+1);
+  negotiations.push({id, orgId, territory, owner, status:'en_negociation', coopId:null});
+  activity.unshift({t:"just now", txt:`${orgName(orgId)} opened a negotiation with ${owner} (${territory}).`});
+  closeModal(document.getElementById('modal-negotiation')); render();
+});
+
+document.getElementById('btn-new-input').addEventListener('click',()=>{renderIntrants();openModal('modal-input');});
+document.getElementById('ni-submit').addEventListener('click',()=>{
+  const parcelId=document.getElementById('ni-parcel').value;
+  if(!parcelId){closeModal(document.getElementById('modal-input'));return;}
+  const type=document.getElementById('ni-type').value;
+  const qty=document.getElementById('ni-qty').value||'—';
+  const org=document.getElementById('ni-org').value||'Not specified';
+  const date=new Date().toLocaleDateString('en-GB');
+  inputsLog.unshift({date,parcel:parcelId,type,qty,org});
+  activity.unshift({t:"just now", txt:`${type} distribution (${qty}) recorded — ${org}.`});
+  closeModal(document.getElementById('modal-input')); render();
+});
+
+document.getElementById('btn-new-soil').addEventListener('click',()=>{renderSoil();openModal('modal-soil');});
+document.getElementById('sr-submit').addEventListener('click',()=>{
+  const parcelId = document.getElementById('sr-parcel').value;
+  const org = document.getElementById('sr-org').value || 'Member organization';
+  const finding = document.getElementById('sr-finding').value || 'Report submitted, awaiting details.';
+  const p = parcels.find(x=>x.id===parcelId);
+  if(p){ p.soil = finding; }
+  activity.unshift({t:"just now", txt:`Soil report submitted for ${p?.name||parcelId} by ${org}.`});
+  closeModal(document.getElementById('modal-soil')); render();
+});
+
+render();
+</script>
+</body>
+</html>
